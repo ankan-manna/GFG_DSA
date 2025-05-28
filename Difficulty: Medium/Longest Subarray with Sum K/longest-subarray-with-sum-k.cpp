@@ -1,61 +1,28 @@
-//{ Driver Code Starts
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
 class Solution {
   public:
-    int longestSubarray(vector<int>& arr, int k) {
+    int longestSubarray(vector<int>& arr, int K) {
         // code here
-        map<int,int>m;
-        int sum=0,len=0;
-        for(int i=0;i<arr.size();i++){
-            sum+=arr[i];
-            if(sum==k){
-                len=max(len,i+1);
-            }
-            int rem=sum-k;
-            if(m.find(rem)!=m.end()){
-                int l=i-m[rem];
-                len=max(l,len);
-            }
-            if(m.find(sum)==m.end()){
-                m[sum]=i;
-            }
+        unordered_map<long long, int> prefixSumIndex;
+    prefixSumIndex[0] = -1;  // Handle subarrays starting from index 0
+
+    long long sum = 0;
+    int maxLen = 0;
+
+    for (int i = 0; i < arr.size(); ++i) {
+        sum += arr[i];
+
+        // Check if there's a subarray (ending at i) with sum K
+        if (prefixSumIndex.find(sum - K) != prefixSumIndex.end()) {
+            int len = i - prefixSumIndex[sum - K];
+            maxLen = max(maxLen, len);
         }
-        return len;
+
+        // Store the first occurrence of the prefix sum
+        if (prefixSumIndex.find(sum) == prefixSumIndex.end()) {
+            prefixSumIndex[sum] = i;
+        }
+    }
+
+    return maxLen;
     }
 };
-
-//{ Driver Code Starts.
-
-int main() {
-    int t;
-    cin >> t;
-    cin.ignore(); // Ignore newline character after t
-
-    while (t--) {
-        vector<int> arr;
-        int k;
-        string inputLine;
-
-        getline(cin, inputLine); // Read the array input as a line
-        stringstream ss(inputLine);
-        int value;
-        while (ss >> value) {
-            arr.push_back(value);
-        }
-
-        cin >> k;
-        cin.ignore(); // Ignore newline character after k input
-
-        Solution solution;
-        cout << solution.longestSubarray(arr, k) << "\n";
-        cout << "~\n";
-    }
-
-    return 0;
-}
-
-// } Driver Code Ends
